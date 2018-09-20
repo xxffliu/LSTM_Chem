@@ -28,9 +28,20 @@ class LSTMChemTrainer(BaseTrain):
                     )
                 )
 
-    def train(self):
-        history = self.model.fit(
+    def train(self, in_batch = False):
+        if not in_batch:
+            self.data = self.data.get_train_data()
+            history = self.model.fit(
                 self.data[0], self.data[1],
+                epochs=self.config.num_epochs,
+                verbose=self.config.verbose_training,
+                batch_size=self.config.batch_size,
+                validation_split=self.config.validation_split,
+                callbacks=self.callbacks,
+                )
+        else:
+            history = self.model.fit_generator(
+                self.data.get_batch_train_data(batch_size = self.config.data_length),
                 epochs=self.config.num_epochs,
                 verbose=self.config.verbose_training,
                 batch_size=self.config.batch_size,
@@ -39,3 +50,4 @@ class LSTMChemTrainer(BaseTrain):
                 )
         self.loss.extend(history.history['loss'])
         self.val_loss.extend(history.history['val_loss'])
+

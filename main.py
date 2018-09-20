@@ -1,3 +1,5 @@
+import warnings
+warnings.simplefilter(action = 'ignore', category = FutureWarning)
 from data_loader.data_loader import DataLoader
 from models.model import LSTMChem
 from trainers.trainer import LSTMChemTrainer
@@ -15,11 +17,13 @@ def main():
     print('Create the data generator.')
     data_loader = DataLoader(config)
 
+
     print('Create the model.')
     model = LSTMChem(config)
 
     print('Create the trainer')
-    trainer = LSTMChemTrainer(model.model, data_loader.get_train_data(), config)
+    trainer = LSTMChemTrainer(model.model, data_loader, config)
+
 
     print('Start training the model.')
     trainer.train()

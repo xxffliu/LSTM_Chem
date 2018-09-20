@@ -16,6 +16,21 @@ class DataLoader(BaseDataLoader):
     def get_train_data(self):
         return self.load_smiles().tokenize_smiles().pad_smiles().one_hot_encode()
 
+    def get_batch_train_data(self, batch_size = 10000):
+        while True:
+            with open(self.config.data_filename) as f:
+                self.smiles = [s.rstrip() for s in f]
+                total_entries = len(self.smiles)
+                batches = total_entries // batch_size
+                counter = 0
+                for batch in range(1, batches + 1):
+                    X = self.smiles[(batch-1) * batch_size : batch*batch_size]
+                    counter = (batch + 1) * batch_size
+                if counter > total_entries:
+                    X = self.smiles[batches*batch_size: ]
+                yield(X.tokenize_smiles().pad_smiles().one_hot_encode())
+
+
     def get_test_data(self):
         raise NotImplementedError
 
